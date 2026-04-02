@@ -55,6 +55,10 @@ function getScoreLabel(score: number): string {
   return 'Critical';
 }
 
+function formatTimestamp(d: Date): string {
+  return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}:${d.getSeconds().toString().padStart(2, '0')}.${d.getMilliseconds().toString().padStart(3, '0')}`;
+}
+
 export default function Home() {
   const [url, setUrl] = useState('');
   const [scanState, setScanState] = useState<ScanState>('idle');
@@ -62,6 +66,7 @@ export default function Home() {
   const [result, setResult] = useState<ScanResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [scanId, setScanId] = useState<string | null>(null);
+  const [scannedUrl, setScannedUrl] = useState<string>('');
   const terminalRef = useRef<HTMLDivElement>(null);
   const eventSourceRef = useRef<EventSource | null>(null);
 
@@ -111,8 +116,9 @@ export default function Home() {
         throw new Error(data.error || 'Failed to create scan');
       }
 
-      const { id } = await createRes.json();
+      const { id, url: resolvedUrl } = await createRes.json();
       setScanId(id);
+      setScannedUrl(resolvedUrl);
 
       // Connect to SSE stream
       const es = new EventSource(`/api/scan/${id}/stream`);
@@ -121,8 +127,7 @@ export default function Home() {
       es.addEventListener('log', (e) => {
         try {
           const data = JSON.parse(e.data);
-          const now = new Date();
-          const timestamp = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}.${now.getMilliseconds().toString().padStart(3, '0')}`;
+          const timestamp = formatTimestamp(new Date());
           setLogs(prev => [...prev, { tag: data.tag, message: data.message, timestamp }]);
         } catch {
           // skip
@@ -187,6 +192,7 @@ export default function Home() {
     setResult(null);
     setError(null);
     setScanId(null);
+    setScannedUrl('');
     setUrl('');
   };
 
@@ -241,7 +247,7 @@ export default function Home() {
             </h1>
 
             <p className="text-slate-400 text-lg max-w-2xl mb-2">
-              Evaluate your website&apos;s AI-Readiness Index. Discover how effectively your content is parsed, indexed, and understood by LLMs and AI search engines.
+              Evaluate your website&apos;s AI Readiness Score. Discover how effectively your content is parsed, indexed, and understood by LLMs and AI search engines.
             </p>
             <p className="text-slate-500 text-sm max-w-xl mb-10 font-mono">
               Powered by semantic entropy analysis · context window optimization · indexing latency metrics
@@ -343,7 +349,7 @@ export default function Home() {
                 {scanState === 'scanning' && (
                   <div className="flex items-center gap-2 text-xs font-mono">
                     <span className="text-slate-600 shrink-0 w-24 hidden sm:block">
-                      {(() => { const n = new Date(); return `${n.getHours().toString().padStart(2,'0')}:${n.getMinutes().toString().padStart(2,'0')}:${n.getSeconds().toString().padStart(2,'0')}.${n.getMilliseconds().toString().padStart(3,'0')}`; })()}
+                      {formatTimestamp(new Date())}
                     </span>
                     <span className="text-cyber-lime terminal-cursor"></span>
                   </div>
@@ -373,7 +379,7 @@ export default function Home() {
                       />
                       <div className="text-center">
                         <div className="text-white font-bold text-xl">{getScoreLabel(result.score)}</div>
-                        <div className="text-slate-400 text-xs font-mono">AI Readiness Index</div>
+                        <div className="text-slate-400 text-xs font-mono">AI Readiness Score</div>
                       </div>
                     </div>
 
@@ -387,7 +393,6 @@ export default function Home() {
                         <span className="text-cyber-lime">(0.3 × Token)</span>
                         <span className="text-slate-500"> + </span>
                         <span className="text-neon-purple">(0.3 × Metadata)</span>
-                        <span className="text-slate-500"> / 1.0</span>
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -423,11 +428,11 @@ export default function Home() {
 
                     {/* Actions */}
                     <div className="flex flex-col gap-2 items-stretch lg:items-end">
-                      <RawDataModal rawFindings={result.rawFindings} url={url} />
+                      <RawDataModal rawFindings={result.rawFindings} url={scannedUrl || url} />
                       <button
                         onClick={() => {
                           const report = {
-                            url,
+                            url: scannedUrl || url,
                             score: result.score,
                             semanticScore: result.semanticScore,
                             tokenScore: result.tokenScore,
@@ -438,7 +443,7 @@ export default function Home() {
                           const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
                           const link = document.createElement('a');
                           link.href = URL.createObjectURL(blob);
-                          link.download = `lumina-report-${new URL(url.startsWith('http') ? url : `https://${url}`).hostname}.json`;
+                          link.download = `lumina-report-${new URL(scannedUrl || url).hostname}.json`;
                           link.click();
                         }}
                         className="flex items-center gap-2 px-4 py-2 text-sm font-mono border border-cyber-lime/30 text-cyber-lime hover:bg-cyber-lime/10 rounded transition-all duration-200"

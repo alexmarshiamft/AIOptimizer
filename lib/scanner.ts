@@ -325,12 +325,11 @@ export function calculateScore(findings: RawFindings): {
   tokenScore = Math.min(100, tokenScore);
   metadataScore = Math.min(100, metadataScore);
 
-  // Weighted final score
+  // Weighted final score (weights sum to 1.0)
   const semanticWeight = 0.4;
   const tokenWeight = 0.3;
   const metadataWeight = 0.3;
-  const totalWeight = semanticWeight + tokenWeight + metadataWeight;
-  const score = ((semanticWeight * semanticScore) + (tokenWeight * tokenScore) + (metadataWeight * metadataScore)) / totalWeight;
+  const score = (semanticWeight * semanticScore) + (tokenWeight * tokenScore) + (metadataWeight * metadataScore);
 
   return { score, semanticScore, tokenScore, metadataScore };
 }
