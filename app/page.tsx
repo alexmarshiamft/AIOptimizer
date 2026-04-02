@@ -87,7 +87,9 @@ export default function Home() {
     // Normalize URL
     let normalizedUrl = url.trim();
     if (!normalizedUrl.startsWith('http://') && !normalizedUrl.startsWith('https://')) {
-      normalizedUrl = 'https://' + normalizedUrl;
+      // Use http for localhost/IP addresses, https for everything else
+      const isLocal = /^(localhost|127\.|10\.|192\.168\.|0\.0\.0\.0)/i.test(normalizedUrl);
+      normalizedUrl = (isLocal ? 'http://' : 'https://') + normalizedUrl;
     }
 
     // Reset state
@@ -341,7 +343,7 @@ export default function Home() {
                 {scanState === 'scanning' && (
                   <div className="flex items-center gap-2 text-xs font-mono">
                     <span className="text-slate-600 shrink-0 w-24 hidden sm:block">
-                      {new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}.000
+                      {(() => { const n = new Date(); return `${n.getHours().toString().padStart(2,'0')}:${n.getMinutes().toString().padStart(2,'0')}:${n.getSeconds().toString().padStart(2,'0')}.${n.getMilliseconds().toString().padStart(3,'0')}`; })()}
                     </span>
                     <span className="text-cyber-lime terminal-cursor"></span>
                   </div>

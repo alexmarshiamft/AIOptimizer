@@ -326,11 +326,11 @@ export function calculateScore(findings: RawFindings): {
   metadataScore = Math.min(100, metadataScore);
 
   // Weighted final score
-  const Ws = 0.4;
-  const Wt = 0.3;
-  const Wa = 0.3;
-  const totalWeight = Ws + Wt + Wa;
-  const score = ((Ws * semanticScore) + (Wt * tokenScore) + (Wa * metadataScore)) / totalWeight;
+  const semanticWeight = 0.4;
+  const tokenWeight = 0.3;
+  const metadataWeight = 0.3;
+  const totalWeight = semanticWeight + tokenWeight + metadataWeight;
+  const score = ((semanticWeight * semanticScore) + (tokenWeight * tokenScore) + (metadataWeight * metadataScore)) / totalWeight;
 
   return { score, semanticScore, tokenScore, metadataScore };
 }
@@ -396,7 +396,7 @@ export function generateRecommendations(findings: RawFindings): Recommendation[]
       category: 'Metadata Accuracy',
       issue: 'Meta description absent — context window optimization missed',
       impact: 'AI engines default to extracting arbitrary text, reducing indexing latency efficiency',
-      fix: 'Add a meta description of 120-160 characters summarizing the page\'s primary value proposition',
+      fix: "Add a meta description of 120-160 characters summarizing the page's primary value proposition",
     });
   } else if (findings.metaDescription.length < 120 || findings.metaDescription.length > 160) {
     recs.push({
