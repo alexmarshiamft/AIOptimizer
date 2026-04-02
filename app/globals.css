@@ -1,0 +1,143 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --cyber-lime: #b9ff57;
+  --electric-blue: #00d4ff;
+  --neon-purple: #c084fc;
+  --dark-bg: #050a0f;
+  --dark-surface: #0a1520;
+  --dark-card: #0d1e2e;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--dark-bg);
+  color: #e2e8f0;
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Glassmorphism utilities */
+.glass {
+  background: rgba(13, 30, 46, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 212, 255, 0.15);
+}
+
+.glass-lime {
+  background: rgba(13, 30, 46, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(185, 255, 87, 0.2);
+}
+
+/* Neon glow effects */
+.glow-blue {
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.3), 0 0 40px rgba(0, 212, 255, 0.1);
+}
+
+.glow-lime {
+  box-shadow: 0 0 20px rgba(185, 255, 87, 0.3), 0 0 40px rgba(185, 255, 87, 0.1);
+}
+
+.text-glow-blue {
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.8), 0 0 20px rgba(0, 212, 255, 0.4);
+}
+
+.text-glow-lime {
+  text-shadow: 0 0 10px rgba(185, 255, 87, 0.8), 0 0 20px rgba(185, 255, 87, 0.4);
+}
+
+/* Terminal styles */
+.terminal-bg {
+  background: #020b14;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.terminal-cursor::after {
+  content: '▋';
+  animation: blink 1s step-end infinite;
+  color: var(--cyber-lime);
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Neural network background */
+.neural-bg {
+  background-image:
+    radial-gradient(circle at 20% 50%, rgba(0, 212, 255, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(185, 255, 87, 0.06) 0%, transparent 40%),
+    radial-gradient(circle at 60% 80%, rgba(192, 132, 252, 0.06) 0%, transparent 40%);
+}
+
+/* Grid lines */
+.grid-lines {
+  background-image:
+    linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+/* Score ring */
+.score-ring {
+  stroke-dasharray: 314;
+  stroke-dashoffset: 314;
+  transition: stroke-dashoffset 2s ease-in-out;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--dark-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 212, 255, 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 212, 255, 0.5);
+}
+
+/* Scan line effect */
+.scan-overlay::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.5), transparent);
+  animation: scanLine 4s linear infinite;
+}
+
+@keyframes scanLine {
+  0% { top: 0%; }
+  100% { top: 100%; }
+}
+
+/* Progress bar */
+.progress-bar {
+  background: linear-gradient(90deg, var(--electric-blue), var(--cyber-lime));
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
